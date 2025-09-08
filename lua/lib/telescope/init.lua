@@ -2,6 +2,28 @@ local pickers = require("telescope.pickers")
 local telescope_actions = require("telescope.actions")
 local conf = require("telescope.config").values
 local utils = require("lib.utils")
+local previewers = require("telescope.previewers")
+local putils = require("telescope.previewers.utils")
+
+-- Show the real terminal buffer in Telescope's preview window to preserve colors
+local termbuf_previewer = previewers.new_buffer_previewer({
+	title = "Terminal",
+	keep_last_buf = true, -- don't let touch the terminal buffer (just in case)
+	define_preview = function(self, entry)
+		local term = entry.value
+		local bufnr = term and term.bufnr
+
+		if not (bufnr and vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buftype == "terminal") then
+			return putils.set_preview_message(self.state.bufnr, "No terminal buffer")
+		end
+
+		vim.schedule(function()
+			vim.api.nvim_win_set_buf(self.state.winid, bufnr)
+			self.state.bufnr = bufnr
+			self.state.bufname = vim.api.nvim_buf_get_name(bufnr)
+		end)
+	end,
+})
 
 --- Create autocommand to enter insert mode when the cursor leaves the telescope buffer.
 --- Useful for actions that are called with exit_on_action set to false b/c it allows the user
@@ -41,18 +63,20 @@ M.open = function(opts)
 		results_title = config.display_mappings and utils.format_results_title(config.mappings)
 			or config.titles.results,
 		preview_title = config.titles.preview,
-		previewer = conf.grep_previewer(opts),
+		previewer = termbuf_previewer,
 		finder = utils.create_finder(),
 		sorter = conf.generic_sorter(opts),
 		attach_mappings = function(prompt_bufnr, map)
 			local mappings = config.mappings
 			for mode, mode_mappings in pairs(mappings) do
 				for keybind, action_tbl in pairs(mode_mappings) do
-					local action = action_tbl["action"]
-					local exit_on_action = action_tbl["exit_on_action"]
-					map(mode, keybind, function()
-						action(prompt_bufnr, exit_on_action)
-					end)
+					if action_tbl ~= false then
+						local action = action_tbl["action"]
+						local exit_on_action = action_tbl["exit_on_action"]
+						map(mode, keybind, function()
+							action(prompt_bufnr, exit_on_action)
+						end)
+					end
 				end
 			end
 

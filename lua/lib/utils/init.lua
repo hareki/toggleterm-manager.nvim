@@ -61,7 +61,7 @@ function M.get_terminals()
 		local visibility = info.hidden == 1 and "h" or "a"
 		local state = flag .. visibility
 
-		local term_name = vim.trim(term.display_name) or tostring(term.id)
+		local term_name = term.display_name and vim.trim(term.display_name) or tostring(term.id)
 
 		local bufname = info.name ~= "" and info.name or "No Name"
 		bufname = Path:new(bufname):normalize(cwd) -- if bufname is inside the cwd, trim that part of the string

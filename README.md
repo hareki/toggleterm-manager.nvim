@@ -138,6 +138,7 @@ toggleterm_manager.setup {
 	    i = {
 	      ["<CR>"] = { action = actions.create_and_name_term, exit_on_action = true },
 	      ["<C-d>"] = { action = actions.delete_term, exit_on_action = false },
+	      ["<C-i>"] = false, -- unbinds the default mapping
 	    },
 	    n = {
 	      ["<CR>"] = { action = actions.create_and_name_term, exit_on_action = true },
