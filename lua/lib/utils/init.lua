@@ -7,10 +7,10 @@ local telescope_config = require("telescope.config").values
 
 local M = {}
 local function_name_to_description = {
-	toggle_terminal = "Toggle term",
-	create_terminal = "Create term",
-	delete_terminal = "Delete term",
-	rename_terminal = "Rename term",
+	toggle_terminal = "Toggle Terminal",
+	create_terminal = "Create Terminal",
+	delete_terminal = "Delete Terminal",
+	rename_terminal = "Rename Terminal",
 }
 
 function M.format_results_title(mappings)
@@ -61,7 +61,7 @@ function M.get_terminals()
 		local visibility = info.hidden == 1 and "h" or "a"
 		local state = flag .. visibility
 
-		local term_name = term.display_name or tostring(term.id)
+		local term_name = vim.trim(term.display_name) or tostring(term.id)
 
 		local bufname = info.name ~= "" and info.name or "No Name"
 		bufname = Path:new(bufname):normalize(cwd) -- if bufname is inside the cwd, trim that part of the string

@@ -61,7 +61,7 @@ end
 function M.create_and_name_term(prompt_bufnr, exit_on_action)
 	local float = toggleterm_config.get("direction") == "float"
 
-	local prompt = "Name terminal: "
+	local prompt = "Name Terminal"
 
 	vim.ui.input({ prompt = prompt }, function(name)
 		utils.clear_command_line()
@@ -118,7 +118,7 @@ function M.rename_term(prompt_bufnr, exit_on_action)
 
 	local term = selection.value
 
-	local prompt = string.format("Rename terminal %s: ", selection.term_name)
+	local prompt = string.format("Rename Terminal %s: ", vim.trim(selection.term_name))
 	vim.ui.input({ prompt = prompt }, function(name)
 		utils.clear_command_line()
 		if name and #name > 0 then
